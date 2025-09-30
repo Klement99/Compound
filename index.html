@@ -11,90 +11,216 @@
     body { background-color: #1f2937; font-family: Arial, sans-serif; }
     #chartContainer { max-width: 100%; height: 300px; }
     canvas { background-color: #000000; border-radius: 8px; }
+    /* Custom slider styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #4b5563;
+      border-radius: 5px;
+      outline: none;
+      margin-top: 8px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #3b82f6;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #3b82f6;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    /* Fixed table headers */
+    #yearlyTable thead th {
+      position: sticky;
+      top: 0;
+      background-color: #374151;
+      z-index: 10;
+    }
+    #yearlyTable {
+      max-height: 300px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 bg-gray-900 text-white">
   <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-    <h1 class="text-2xl font-bold text-center mb-4 text-white">Compound Interest Calculator</h1>
+    <h1 class="text-2xl font-bold text-center mb-4 text-yellow-400">Compound Interest Calculator</h1>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-300">Select Preset</label>
+      <select id="presetSelect" onchange="loadPreset()" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <option value="none">Select a Preset</option>
+        <option value="klement">Klement</option>
+        <option value="sune">Sune</option>
+        <option value="both">Both</option>
+      </select>
+    </div>
     <form id="calcForm" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-300">Initial Investment (R)</label>
-        <input type="number" id="initialInvestment" value="1400000" min="0" step="0.01" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <label class="block text-sm font-medium text-gray-300">💰 Initial Investment (R)</label>
+        <input type="text" id="initialInvestment" value="0" pattern="[0-9\s]*" onfocus="unformatInput(this)" onblur="formatInput(this)" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300">Years Invested</label>
-        <input type="number" id="years" value="1" min="1" step="1" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <label class="block text-sm font-medium text-gray-300" id="yearsLabel">📅 Years Invested (1 Year)</label>
+        <input type="range" id="years" value="1" min="1" max="50" step="1" oninput="updateYearsDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300">Monthly Contribution (R)</label>
-        <input type="number" id="monthlyContribution" value="20000" min="0" step="0.01" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <label class="block text-sm font-medium text-gray-300">💰 Monthly Contribution (R)</label>
+        <input type="text" id="monthlyContribution" value="0" pattern="[0-9\s]*" onfocus="unformatInput(this)" onblur="formatInput(this)" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300">Annual Growth Rate (%)</label>
-        <input type="number" id="rate" value="15" min="0" step="0.01" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <label class="block text-sm font-medium text-gray-300" id="rateLabel">📈 Annual Growth Rate (15%)</label>
+        <input type="range" id="rate" value="15" min="5" max="25" step="1" oninput="updateRateDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300">Inflation Rate (%)</label>
-        <input type="number" id="inflationRate" value="6" min="0" step="0.01" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-300">Marginal Tax Rate (%)</label>
-        <input type="number" id="marginalTaxRate" value="45" min="0" max="45" step="0.01" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
+        <label class="block text-sm font-medium text-gray-300" id="inflationRateLabel">📈 Inflation Rate (6%)</label>
+        <input type="range" id="inflationRate" value="6" min="5" max="10" step="1" oninput="updateInflationRateDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <button type="button" onclick="calculate()" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Calculate</button>
     </form>
     <div id="results" class="mt-6 space-y-2 hidden">
-      <h2 class="text-lg font-semibold text-center text-white">Pre-Tax Results</h2>
+      <h2 class="text-lg font-semibold text-center text-yellow-400">Pre-Tax Results</h2>
       <p class="text-center"><strong>Investment Value:</strong> <span id="totalValue"></span></p>
       <p class="text-center"><strong>Monthly Interest (End):</strong> <span id="monthlyInterest"></span></p>
       <hr>
-      <p class="text-center"><strong>Future Power (Total):</strong> <span id="totalRealValue"></span></p>
-      <p class="text-center"><strong>Future Power (Interest):</strong> <span id="monthlyRealInterest"></span></p>
-      <p class="text-center"><strong>Future Power Post-Tax (Total):</strong> <span id="postTaxRealTotal"></span></p>
+      <p class="text-center"><strong>Future Value (Total):</strong> <span id="totalRealValue"></span></p>
+      <p class="text-center"><strong>Future Value (Interest):</strong> <span id="monthlyRealInterest"></span></p>
       <hr>
-      <h2 class="text-lg font-semibold text-center text-white mt-4">Post-Tax Results</h2>
+      <h2 class="text-lg font-semibold text-center text-yellow-400 mt-4">Post-Tax Results</h2>
       <p class="text-center"><strong>Total Invested:</strong> <span id="totalInvested"></span></p>
-      <p class="text-center"><strong>Net Proceeds (Cash-Out):</strong> <span id="postTaxTotal"></span></p>
-      <p class="text-center"><strong>Monthly Interest:</strong> <span id="postTaxMonthlyInterest"></span></p>
-      <p class="text-center"><strong>Future Post-Tax (Interest):</strong> <span id="postTaxRealMonthlyInterest"></span></p>
+      <p class="text-center"><strong>Full Cash Out Value:</strong> <span id="postTaxTotal"></span></p>
+      <p class="text-center"><strong>Future Value Post-Tax (Total):</strong> <span id="postTaxRealTotal"></span></p>
+      <p class="text-center"><strong>Post-Tax Monthly Interest:</strong> <span id="postTaxMonthlyInterest"></span></p>
+      <p class="text-center"><strong>Future Value Post-Tax (Interest):</strong> <span id="postTaxRealMonthlyInterest"></span></p>
+      <p class="text-center text-green-500"><strong>🙂 Effective Tax % (Total Withdrawal):</strong> <span id="effectiveTaxPercent"></span></p>
       <hr>
-      <p class="text-sm text-center text-gray-400 mt-2">Assumes CGT on lump-sum disposal (40% inclusion, R40k exclusion) & interest exemption (R23.8k/yr). Adjust marginal rate for your bracket.</p>
+      <p class="text-sm text-center text-gray-400 mt-2">Assumes CGT at effective 18% (40% inclusion, R40k exclusion) & interest exemption (R23.8k/yr at 45% top bracket).</p>
     </div>
-    <div id="chartContainer" class="mt-6">
+    <div class="mt-6 flex items-center justify-center">
+      <label class="text-sm font-medium text-gray-300">
+        <input type="checkbox" id="logScaleToggle" onchange="calculate()"> Use Logarithmic Scale
+      </label>
+    </div>
+    <div id="chartContainer" class="mt-2">
       <canvas id="growthChart"></canvas>
     </div>
     <div id="yearlyTable" class="mt-6 hidden">
-      <h2 class="text-lg font-semibold text-center text-white">Yearly Breakdown</h2>
-      <table class="w-full text-sm border border-gray-600">
-        <thead class="bg-gray-700">
-          <tr>
-            <th class="p-2 border border-gray-600 text-center text-white">Year</th>
-            <th class="p-2 border border-gray-600 text-center text-white">Total Value (R)</th>
-            <th class="p-2 border border-gray-600 text-center text-white">Monthly Interest (R)</th>
-            <th class="p-2 border border-gray-600 text-center text-white">Post-Tax Monthly Interest (R)</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody" class="text-center"></tbody>
-      </table>
+      <h2 class="text-lg font-semibold text-center text-yellow-400">Yearly Breakdown</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-xs sm:text-sm border border-gray-600 table-auto">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="p-3 sm:p-2 border border-gray-600 text-left text-white min-w-[60px]">Year</th>
+              <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Total Value (R)</th>
+              <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Monthly Interest (R)</th>
+              <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Post-Tax Monthly Interest (R)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="text-center"></tbody>
+        </table>
+      </div>
     </div>
   </div>
   <script>
     let chart = null;
+
+    // Hardcoded presets
+    const presets = {
+      klement: {
+        initialInvestment: 1400000,
+        years: 15,
+        monthlyContribution: 20000,
+        rate: 16,
+        inflationRate: 6
+      },
+      sune: {
+        initialInvestment: 700000,
+        years: 15,
+        monthlyContribution: 10000,
+        rate: 16,
+        inflationRate: 6
+      },
+      both: {
+        initialInvestment: 2000000,
+        years: 25,
+        monthlyContribution: 30000,
+        rate: 15,
+        inflationRate: 6
+      }
+    };
+
+    // Function to load a preset
+    function loadPreset() {
+      const presetName = document.getElementById('presetSelect').value;
+      if (presetName === 'none') return;
+
+      const preset = presets[presetName];
+      document.getElementById('initialInvestment').value = preset.initialInvestment.toLocaleString('en-ZA', { minimumFractionDigits: 0 });
+      document.getElementById('years').value = preset.years;
+      document.getElementById('monthlyContribution').value = preset.monthlyContribution.toLocaleString('en-ZA', { minimumFractionDigits: 0 });
+      document.getElementById('rate').value = preset.rate;
+      document.getElementById('inflationRate').value = preset.inflationRate;
+
+      // Update slider displays
+      updateYearsDisplay(preset.years);
+      updateRateDisplay(preset.rate);
+      updateInflationRateDisplay(preset.inflationRate);
+    }
+
+    // Function to update years display
+    function updateYearsDisplay(value) {
+      document.getElementById('yearsLabel').textContent = `📅 Years Invested (${value} Year${value > 1 ? 's' : ''})`;
+    }
+
+    // Function to update annual growth rate display
+    function updateRateDisplay(value) {
+      document.getElementById('rateLabel').textContent = `📈 Annual Growth Rate (${value}%)`;
+    }
+
+    // Function to update inflation rate display
+    function updateInflationRateDisplay(value) {
+      document.getElementById('inflationRateLabel').textContent = `📈 Inflation Rate (${value}%)`;
+    }
 
     // Function to format numbers with spaces (e.g., 1234567 -> R1 234 567)
     function formatNumber(num) {
       return 'R' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
 
+    // Function to format percentage
+    function formatPercent(num) {
+      return num.toFixed(2) + '%';
+    }
+
+    // Function to unformat input on focus (remove spaces for editing)
+    function unformatInput(element) {
+      const value = element.value.replace(/[^0-9.]/g, '');
+      element.value = value;
+    }
+
+    // Function to format input fields with spaces on blur
+    function formatInput(element) {
+      const value = parseFloat(element.value.replace(/[^0-9.]/g, '')) || 0;
+      element.value = Math.round(value).toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
     function calculate() {
-      const P = parseFloat(document.getElementById('initialInvestment').value);
-      const t = parseFloat(document.getElementById('years').value);
-      const PMT = parseFloat(document.getElementById('monthlyContribution').value);
-      const r = parseFloat(document.getElementById('rate').value) / 100;
-      const i = parseFloat(document.getElementById('inflationRate').value) / 100;
-      const marginalRate = parseFloat(document.getElementById('marginalTaxRate').value) / 100;
+      // Parse inputs, removing any non-numeric characters (spaces, etc.)
+      const P = parseFloat(document.getElementById('initialInvestment').value.replace(/[^0-9.]/g, '')) || 0;
+      const t = parseFloat(document.getElementById('years').value) || 1;
+      const PMT = parseFloat(document.getElementById('monthlyContribution').value.replace(/[^0-9.]/g, '')) || 0;
+      const r = parseFloat(document.getElementById('rate').value) / 100 || 0;
+      const i = parseFloat(document.getElementById('inflationRate').value) / 100 || 0;
       const n = 12; // Monthly compounding
       const monthlyExemption = 23800 / 12; // R23.8k annual exemption / 12
+      const marginalRate = 0.45; // Hardcoded top bracket for interest tax
+      const effectiveCgtRate = 0.18; // Hardcoded effective max for CGT
 
       // Total invested (base cost)
       const totalInvested = P + PMT * n * t;
@@ -105,20 +231,22 @@
       const totalRealValue = futureValue / Math.pow(1 + i, t);
       const monthlyRealInterest = monthlyInterest / Math.pow(1 + i, t);
 
-      // Post-tax calculations (SARS 2025 rules)
-      // Total cash-out: CGT on gain
+      // Post-tax calculations (SARS 2025 rules, simplified)
+      // Total cash-out: Effective 18% CGT on net gain after exclusion
       const capitalGain = Math.max(0, futureValue - totalInvested);
       const netGainAfterExclusion = Math.max(0, capitalGain - 40000); // R40k annual exclusion
-      const taxableGain = netGainAfterExclusion * 0.4; // 40% inclusion rate
-      const cgtTax = taxableGain * marginalRate;
+      const cgtTax = netGainAfterExclusion * effectiveCgtRate;
       const postTaxTotal = futureValue - cgtTax;
       const postTaxRealTotal = postTaxTotal / Math.pow(1 + i, t);
 
-      // Monthly interest: Tax on interest income
+      // Monthly interest: Tax on interest income at 45% after exemption
       const taxableMonthlyInterest = Math.max(0, monthlyInterest - monthlyExemption);
       const taxOnMonthlyInterest = taxableMonthlyInterest * marginalRate;
       const postTaxMonthlyInterest = monthlyInterest - taxOnMonthlyInterest;
       const postTaxRealMonthlyInterest = postTaxMonthlyInterest / Math.pow(1 + i, t);
+
+      // Effective tax percentage on total withdrawal
+      const effectiveTaxPercent = futureValue > 0 ? (cgtTax / futureValue) * 100 : 0;
 
       // Display results
       document.getElementById('totalValue').textContent = formatNumber(futureValue);
@@ -130,13 +258,26 @@
       document.getElementById('postTaxMonthlyInterest').textContent = formatNumber(postTaxMonthlyInterest);
       document.getElementById('postTaxRealTotal').textContent = formatNumber(postTaxRealTotal);
       document.getElementById('postTaxRealMonthlyInterest').textContent = formatNumber(postTaxRealMonthlyInterest);
+      document.getElementById('effectiveTaxPercent').textContent = formatPercent(effectiveTaxPercent);
       document.getElementById('results').classList.remove('hidden');
 
-      // Generate chart data
+      // Generate chart data (yearly)
       const labels = Array.from({length: t + 1}, (_, i) => i);
-      const data = labels.map(year => {
+      const preTaxData = labels.map(year => {
         return P * Math.pow(1 + r/n, n*year) + PMT * ((Math.pow(1 + r/n, n*year) - 1) / (r/n));
       });
+      const postTaxData = labels.map(year => {
+        const yearlyValue = P * Math.pow(1 + r/n, n*year) + PMT * ((Math.pow(1 + r/n, n*year) - 1) / (r/n));
+        const yearlyCapitalGain = Math.max(0, yearlyValue - (P + PMT * n * year));
+        const yearlyNetGainAfterExclusion = Math.max(0, yearlyCapitalGain - 40000);
+        const yearlyCgtTax = yearlyNetGainAfterExclusion * effectiveCgtRate;
+        return yearlyValue - yearlyCgtTax;
+      });
+      const realValueData = preTaxData.map(value => value / Math.pow(1 + i, t));
+
+      // Determine scale type based on toggle
+      const logScaleToggle = document.getElementById('logScaleToggle').checked;
+      const yAxisType = logScaleToggle ? 'logarithmic' : 'linear';
 
       // Update or create chart
       if (chart) chart.destroy();
@@ -144,21 +285,70 @@
         type: 'line',
         data: {
           labels: labels,
-          datasets: [{
-            label: 'Investment Growth (R)',
-            data: data,
-            borderColor: '#3b82f6',
-            fill: false
-          }]
+          datasets: [
+            {
+              label: 'Pre-Tax Value (R)',
+              data: preTaxData,
+              borderColor: '#3b82f6',
+              fill: false
+            },
+            {
+              label: 'Post-Tax Value (R)',
+              data: postTaxData,
+              borderColor: '#10b981',
+              fill: false
+            },
+            {
+              label: 'Inflation-Adjusted Value (R)',
+              data: realValueData,
+              borderColor: '#f59e0b',
+              fill: false
+            }
+          ]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
-            x: { title: { display: true, text: 'Years', color: '#d1d5db' }, ticks: { color: '#d1d5db' } },
-            y: { title: { display: true, text: 'Value (R)', color: '#d1d5db' }, ticks: { color: '#d1d5db' } }
+            x: { 
+              title: { display: true, text: 'Years', color: '#d1d5db', font: { size: window.innerWidth < 640 ? 10 : 12 } }, 
+              ticks: { color: '#d1d5db', font: { size: window.innerWidth < 640 ? 8 : 10 } } 
+            },
+            y: { 
+              type: yAxisType,
+              title: { display: true, text: 'Value (R)', color: '#d1d5db', font: { size: window.innerWidth < 640 ? 10 : 12 } }, 
+              ticks: { 
+                color: '#d1d5db', 
+                font: { size: window.innerWidth < 640 ? 8 : 10 },
+                callback: function(value) {
+                  return 'R' + value.toLocaleString('en-ZA', { minimumFractionDigits: 0 });
+                }
+              },
+              min: 0 // Ensure logarithmic scale doesn't break with negative or zero values
+            }
           },
           plugins: {
-            legend: { labels: { color: '#d1d5db' } }
+            legend: { 
+              labels: { 
+                color: '#d1d5db', 
+                font: { size: window.innerWidth < 640 ? 8 : 10 },
+                filter: function(item, chartData) {
+                  return true; // Show all datasets in legend
+                }
+              } 
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  label += formatNumber(context.parsed.y);
+                  return label;
+                }
+              }
+            }
           }
         }
       });
@@ -172,11 +362,16 @@
         const taxableYearlyInterest = Math.max(0, yearlyInterest - monthlyExemption);
         const taxOnYearlyInterest = taxableYearlyInterest * marginalRate;
         const postTaxYearlyInterest = yearlyInterest - taxOnYearlyInterest;
-        const row = `<tr><td class="p-2 border border-gray-600 text-white">${year}</td><td class="p-2 border border-gray-600 text-white">${formatNumber(yearlyValue)}</td><td class="p-2 border border-gray-600 text-white">${formatNumber(yearlyInterest)}</td><td class="p-2 border border-gray-600 text-white">${formatNumber(postTaxYearlyInterest)}</td></tr>`;
+        const row = `<tr><td class="p-3 sm:p-2 border border-gray-600 text-left text-white">${year}</td><td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyValue)}</td><td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyInterest)}</td><td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(postTaxYearlyInterest)}</td></tr>`;
         tableBody.innerHTML += row;
       }
       document.getElementById('yearlyTable').classList.remove('hidden');
     }
+
+    // Initialize display values
+    updateYearsDisplay(document.getElementById('years').value);
+    updateRateDisplay(document.getElementById('rate').value);
+    updateInflationRateDisplay(document.getElementById('inflationRate').value);
   </script>
 </body>
 </html>
