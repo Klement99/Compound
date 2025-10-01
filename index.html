@@ -47,6 +47,13 @@
       max-height: 300px;
       overflow-y: auto;
     }
+    /* Table cell optimizations for mobile */
+    #yearlyTable table {
+      max-width: 100%;
+    }
+    #yearlyTable td {
+      white-space: normal;
+    }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 bg-gray-900 text-white">
@@ -137,12 +144,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Value Breakdown</summary>
           <div class="p-3">
-            <table class="min-w-full text-xs sm:text-sm border border-gray-600 table-auto">
+            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[60px]">Year</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Value</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Future Value</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Value</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Future Value</th>
                 </tr>
               </thead>
               <tbody id="tableBodyValue" class="text-center"></tbody>
@@ -152,12 +159,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Interest Breakdown</summary>
           <div class="p-3">
-            <table class="min-w-full text-xs sm:text-sm border border-gray-600 table-auto">
+            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[60px]">Year</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Interest</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">Future Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Future Interest</th>
                 </tr>
               </thead>
               <tbody id="tableBodyInterest" class="text-center"></tbody>
@@ -167,12 +174,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Post-Tax Interest Breakdown</summary>
           <div class="p-3">
-            <table class="min-w-full text-xs sm:text-sm border border-gray-600 table-auto">
+            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[60px]">Year</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">(PT) Interest</th>
-                  <th class="p-3 sm:p-2 border border-gray-600 text-center text-white min-w-[120px]">(PT) Future Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">(PT) Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">(PT) Future Interest</th>
                 </tr>
               </thead>
               <tbody id="tableBodyPostTaxInterest" class="text-center"></tbody>
@@ -548,25 +555,25 @@
         
         // Value table
         const valueRow = `<tr>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${year}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyValue)}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyFutureValue)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${year}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(yearlyValue)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(yearlyFutureValue)}</td>
         </tr>`;
         tableBodyValue.innerHTML += valueRow;
 
         // Interest table
         const interestRow = `<tr>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${year}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyInterest)}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(yearlyFutureInterest)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${year}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(yearlyInterest)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(yearlyFutureInterest)}</td>
         </tr>`;
         tableBodyInterest.innerHTML += interestRow;
 
         // Post-tax interest table
         const postTaxInterestRow = `<tr>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${year}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(postTaxYearlyInterest)}</td>
-          <td class="p-3 sm:p-2 border border-gray-600 text-center text-white">${formatNumber(postTaxYearlyFutureInterest)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${year}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(postTaxYearlyInterest)}</td>
+          <td class="p-2 sm:p-3 border border-gray-600 text-center text-white whitespace-normal">${formatNumber(postTaxYearlyFutureInterest)}</td>
         </tr>`;
         tableBodyPostTaxInterest.innerHTML += postTaxInterestRow;
       }
