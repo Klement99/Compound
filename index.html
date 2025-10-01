@@ -47,10 +47,7 @@
       max-height: 300px;
       overflow-y: auto;
     }
-    /* Table cell optimizations for mobile */
-    #yearlyTable table {
-      max-width: 100%;
-    }
+    /* Table cell optimizations */
     #yearlyTable td {
       white-space: normal;
     }
@@ -59,6 +56,7 @@
 <body class="min-h-screen flex items-center justify-center p-4 bg-gray-900 text-white">
   <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
     <h1 class="text-2xl font-bold text-center mb-4 text-yellow-400">Compound Interest Calculator</h1>
+    <h6 class="text-xs font-bold text-center mb-4 text-gray-400">Brought to you by Klement Marais</h6>
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-300">Select Preset</label>
       <select id="presetSelect" onchange="loadPreset()" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
@@ -127,10 +125,10 @@
         </ul>
       </div>
     </details>
-    <div id="chartContainer" class="mt-2">
+    <div id="chartContainer" class="mt-2 hidden">
       <canvas id="growthChart"></canvas>
     </div>
-    <div id="barChartContainer" class="mt-6">
+    <div id="barChartContainer" class="mt-6 hidden">
       <canvas id="postTaxBarChart"></canvas>
     </div>
     <div id="yearlyTable" class="mt-6 hidden">
@@ -144,12 +142,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Value Breakdown</summary>
           <div class="p-3">
-            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
+            <table class="w-full text-xs sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Value</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Future Value</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[50px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">Value</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">Future Value</th>
                 </tr>
               </thead>
               <tbody id="tableBodyValue" class="text-center"></tbody>
@@ -159,12 +157,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Interest Breakdown</summary>
           <div class="p-3">
-            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
+            <table class="w-full text-xs sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Interest</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">Future Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[50px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">Future Interest</th>
                 </tr>
               </thead>
               <tbody id="tableBodyInterest" class="text-center"></tbody>
@@ -174,12 +172,12 @@
         <details class="mt-6 bg-gray-700 rounded-lg">
           <summary class="p-3 text-md font-semibold text-yellow-400 cursor-pointer hover:bg-gray-600 rounded-lg">Post-Tax Interest Breakdown</summary>
           <div class="p-3">
-            <table class="max-w-full text-[10px] sm:text-sm border border-gray-600 table-auto">
+            <table class="w-full text-xs sm:text-sm border border-gray-600 table-auto">
               <thead class="bg-gray-700">
                 <tr>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[40px] sm:min-w-[60px]">Year</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">(PT) Interest</th>
-                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[80px] sm:min-w-[120px]">(PT) Future Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[50px] sm:min-w-[60px]">Year</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">(PT) Interest</th>
+                  <th class="p-2 sm:p-3 border border-gray-600 text-center text-white min-w-[100px] sm:min-w-[120px]">(PT) Future Interest</th>
                 </tr>
               </thead>
               <tbody id="tableBodyPostTaxInterest" class="text-center"></tbody>
@@ -323,6 +321,9 @@
       document.getElementById('postTaxRealMonthlyInterest').textContent = formatNumber(postTaxRealMonthlyInterest);
       document.getElementById('effectiveTaxPercent').textContent = formatPercent(effectiveTaxPercent);
       document.getElementById('results').classList.remove('hidden');
+      document.getElementById('chartContainer').classList.remove('hidden');
+      document.getElementById('barChartContainer').classList.remove('hidden');
+      document.getElementById('yearlyTable').classList.remove('hidden');
 
       // Generate chart data (yearly)
       const labels = Array.from({length: t + 1}, (_, i) => i);
@@ -577,9 +578,6 @@
         </tr>`;
         tableBodyPostTaxInterest.innerHTML += postTaxInterestRow;
       }
-      document.getElementById('yearlyTable').classList.remove('hidden');
-      // Show/hide "Show All Years" checkbox based on years
-      document.getElementById('showAllYears').parentElement.classList.toggle('hidden', t <= 15);
     }
 
     // Initialize display values
