@@ -73,7 +73,7 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-300" id="yearsLabel">📅 Years Invested (1 Year)</label>
-        <input type="range" id="years" value="1" min="1" max="50" step="1" oninput="updateYearsDisplay(this.value)" class="mt-1 block w-full">
+        <input type="range" id="years" value="1" min="1" max="70" step="1" oninput="updateYearsDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-300">💰 Monthly Contribution (R)</label>
@@ -84,8 +84,8 @@
         <input type="range" id="rate" value="15" min="5" max="25" step="1" oninput="updateRateDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300" id="inflationRateLabel">📉 Inflation Rate (6%)</label>
-        <input type="range" id="inflationRate" value="6" min="5" max="10" step="1" oninput="updateInflationRateDisplay(this.value)" class="mt-1 block w-full">
+        <label class="block text-sm font-medium text-gray-300" id="inflationRateLabel">📉 Inflation Rate (5%)</label>
+        <input type="range" id="inflationRate" value="5" min="4" max="10" step="1" oninput="updateInflationRateDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <button type="button" onclick="calculate()" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Calculate</button>
     </form>
