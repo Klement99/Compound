@@ -80,7 +80,7 @@
         <input type="text" id="monthlyContribution" value="0" pattern="[0-9\s]*" onfocus="unformatInput(this)" onblur="formatInput(this)" class="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300" id="rateLabel">📈 Annual Growth Rate (15%)</label>
+        <label class="block text-sm font-medium text-gray-300" id="rateLabel">📈 Annual Growth Rate (14%)</label>
         <input type="range" id="rate" value="15" min="5" max="25" step="1" oninput="updateRateDisplay(this.value)" class="mt-1 block w-full">
       </div>
       <div>
@@ -194,23 +194,23 @@
     // Hardcoded presets
     const presets = {
       klement: {
-        initialInvestment: 1480000,
+        initialInvestment: 1780000,
         years: 15,
-        monthlyContribution: 20000,
+        monthlyContribution: 25000,
         rate: 17,
         inflationRate: 6
       },
       sune: {
-        initialInvestment: 683000,
+        initialInvestment: 815000,
         years: 15,
-        monthlyContribution: 10000,
+        monthlyContribution: 12000,
         rate: 17,
         inflationRate: 6
       },
       both: {
-        initialInvestment: 2165000,
+        initialInvestment: 2440000,
         years: 25,
-        monthlyContribution: 30000,
+        monthlyContribution: 37000,
         rate: 20,
         inflationRate: 6
       }
